@@ -5,6 +5,7 @@ import Welcome from './pages/Welcome'
 import Calendar from './pages/Calendar'
 import BookingForm from './pages/BookingForm'
 import Confirmation from './pages/Confirmation'
+import MyBooking from './pages/MyBooking'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="booking" element={<BookingForm />} />
             <Route path="confirmation" element={<Confirmation />} />
+            <Route path="my-booking" element={<MyBooking />} />
           </Route>
         </Routes>
       </BrowserRouter>
