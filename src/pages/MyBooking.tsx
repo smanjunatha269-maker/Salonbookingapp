@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from '../hooks/BookingContext'
+import { SALON_NAME } from '../utils/constants'
 import { formatFullDate } from '../utils/dates'
 
-export default function Confirmation() {
+export default function MyBooking() {
   const navigate = useNavigate()
   const { mobileNumber, date, timeSlot, name, age, serviceType } = useBooking()
 
@@ -18,13 +19,13 @@ export default function Confirmation() {
   }
 
   return (
-    <section className="mx-auto max-w-md space-y-8 text-center">
+    <section className="mx-auto max-w-md space-y-6">
       <div className="space-y-2">
-        <h2 className="text-3xl font-semibold tracking-tight">Appointment Confirmed 🎉</h2>
-        <p className="text-stone-600">Looking forward to serving you!</p>
+        <h2 className="text-3xl font-semibold tracking-tight">My Booking</h2>
+        <p className="text-stone-600">Your upcoming appointment at {SALON_NAME}.</p>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-stone-200 bg-white p-5 text-left text-sm text-stone-600">
+      <div className="space-y-3 rounded-lg border border-stone-200 bg-white p-5 text-sm text-stone-600">
         <p>
           <span className="font-medium text-stone-900">Name:</span> {name}
         </p>
@@ -41,14 +42,6 @@ export default function Confirmation() {
           <span className="font-medium text-stone-900">Service:</span> {serviceType}
         </p>
       </div>
-
-      <button
-        type="button"
-        onClick={() => navigate('/my-booking')}
-        className="w-full rounded-lg bg-stone-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-stone-800"
-      >
-        View My Booking
-      </button>
     </section>
   )
 }
