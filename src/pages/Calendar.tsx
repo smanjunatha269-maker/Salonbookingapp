@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from '../hooks/BookingContext'
+import {
+  getBookedAppointmentsForDates,
+  getBookedSlotKey,
+} from '../services/appointmentService'
 import { formatDayLabel, getAvailableDays, toDateKey } from '../utils/dates'
 import { getTimeSlots } from '../utils/timeSlots'
 
 const availableDays = getAvailableDays()
+const availableDateKeys = availableDays.map(toDateKey)
 const timeSlots = getTimeSlots()
 
 export default function Calendar() {
   const navigate = useNavigate()
   const { mobileNumber, setDate, setTimeSlot } = useBooking()
   const [selectedDate, setSelectedDate] = useState('')
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set())
+  const [loadingSlots, setLoadingSlots] = useState(true)
 
   useEffect(() => {
     if (!mobileNumber) {
@@ -18,11 +25,35 @@ export default function Calendar() {
     }
   }, [mobileNumber, navigate])
 
+  useEffect(() => {
+    async function loadBookedSlots() {
+      try {
+        const appointments = await getBookedAppointmentsForDates(availableDateKeys)
+        const slots = new Set(
+          appointments.map((appointment) =>
+            getBookedSlotKey(appointment.appointment_date, appointment.time_slot),
+          ),
+        )
+        setBookedSlots(slots)
+      } catch {
+        setBookedSlots(new Set())
+      } finally {
+        setLoadingSlots(false)
+      }
+    }
+
+    loadBookedSlots()
+  }, [])
+
   function handleDaySelect(dateKey: string) {
     setSelectedDate(dateKey)
   }
 
   function handleSlotSelect(slot: string) {
+    if (bookedSlots.has(getBookedSlotKey(selectedDate, slot))) {
+      return
+    }
+
     setDate(selectedDate)
     setTimeSlot(slot)
     navigate('/booking')
@@ -73,17 +104,29 @@ export default function Calendar() {
       {selectedDate && (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-stone-700">Choose a time</h3>
+          {loadingSlots && (
+            <p className="text-sm text-stone-500">Loading available slots...</p>
+          )}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {timeSlots.map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() => handleSlotSelect(slot)}
-                className="rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm font-medium text-stone-900 transition-colors hover:border-stone-300 hover:bg-stone-50"
-              >
-                {slot}
-              </button>
-            ))}
+            {timeSlots.map((slot) => {
+              const isBooked = bookedSlots.has(getBookedSlotKey(selectedDate, slot))
+
+              return (
+                <button
+                  key={slot}
+                  type="button"
+                  disabled={isBooked || loadingSlots}
+                  onClick={() => handleSlotSelect(slot)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isBooked
+                      ? 'cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 line-through'
+                      : 'border-stone-200 bg-white text-stone-900 hover:border-stone-300 hover:bg-stone-50 disabled:cursor-wait disabled:opacity-60'
+                  }`}
+                >
+                  {slot}
+                </button>
+              )
+            })}
           </div>
         </div>
       )}

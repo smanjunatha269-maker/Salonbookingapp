@@ -61,3 +61,28 @@ export async function getLatestAppointmentByPhone(phone: string): Promise<Appoin
 
   return data
 }
+
+export function getBookedSlotKey(appointmentDate: string, timeSlot: string): string {
+  return `${appointmentDate}|${timeSlot}`
+}
+
+export async function getBookedAppointmentsForDates(
+  dates: string[],
+): Promise<Pick<Appointment, 'appointment_date' | 'time_slot'>[]> {
+  if (dates.length === 0) {
+    return []
+  }
+
+  const supabase = getSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .select('appointment_date, time_slot')
+    .in('appointment_date', dates)
+
+  if (error) {
+    throw error
+  }
+
+  return data ?? []
+}
