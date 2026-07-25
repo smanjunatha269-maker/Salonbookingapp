@@ -10,6 +10,17 @@ export type AppointmentInput = {
   serviceType: ServiceType
 }
 
+export type Appointment = {
+  id: string
+  name: string
+  age: number
+  phone: string
+  appointment_date: string
+  time_slot: string
+  service_type: string
+  created_at: string
+}
+
 export async function saveAppointment(appointment: AppointmentInput) {
   const supabase = getSupabaseClient()
 
@@ -25,6 +36,24 @@ export async function saveAppointment(appointment: AppointmentInput) {
     })
     .select()
     .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export async function getLatestAppointmentByPhone(phone: string): Promise<Appointment | null> {
+  const supabase = getSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .select('*')
+    .eq('phone', phone)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
   if (error) {
     throw error
