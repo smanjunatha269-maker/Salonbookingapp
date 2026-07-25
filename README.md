@@ -1,55 +1,59 @@
-# Salon Booking App
+# RolePrep AI
 
-A minimal React + Vite + Tailwind CSS application for salon appointment booking.
+A React + Vite + Tailwind CSS front end for role-focused interview preparation: describe a role,
+review the skills that matter, work through a practice quiz, and read the results.
+
+This is a UI scaffold. Skill generation, quiz scoring, and the AI integration are not implemented
+yet — every screen renders sample content from `src/utils/placeholderData.ts`.
 
 ## Stack
 
 - React 19
 - Vite
-- Tailwind CSS
-- React Router
-- Supabase
+- Tailwind CSS 4
+- React Router 7
+- TypeScript
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env
 npm run dev
 ```
 
-## Supabase setup
+Other scripts:
 
-1. Create a Supabase project at [supabase.com](https://supabase.com).
-2. Copy `.env.example` to `.env` and add your project URL and anon key.
-3. Run the migration in `supabase/migrations/001_create_appointments.sql` using the Supabase SQL editor or CLI.
-
-The `appointments` table stores:
-
-- `name`, `age`, `phone`
-- `appointment_date`, `time_slot`, `service_type`
-- `created_at`
-
-Bookings are saved when **Submit booking** is clicked on the Booking Form page.
-
-## Project structure
-
-```
-src/
-├── assets/
-├── components/
-├── hooks/
-├── pages/
-├── services/
-└── utils/
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the dev server |
+| `npm run build` | Type-check and build for production |
+| `npm run preview` | Serve the production build |
+| `npm run lint` | Run oxlint |
 
 ## Routes
 
 | Path | Page |
 |------|------|
-| `/` | Welcome |
-| `/calendar` | Calendar |
-| `/booking` | Booking Form |
-| `/confirmation` | Confirmation |
-| `/my-booking` | My Booking |
+| `/` | Home |
+| `/skills` | Skills Preview |
+| `/quiz` | Quiz |
+| `/results` | Results |
+| `*` | Not Found |
+
+## Project structure
+
+```
+src/
+├── components/   Reusable UI (layout, navbar, cards, progress, score ring)
+├── pages/        One component per route
+├── services/     Placeholder API/AI boundary, not implemented yet
+├── hooks/        Small UI hooks (document title, scroll restoration)
+├── utils/        Class name helper, constants, formatting, sample data
+└── types/        Shared domain types (Role, Skill, QuizQuestion, QuizResult)
+```
+
+## Next steps
+
+1. Implement `fetchSkillsForRole` in `src/services/roleService.ts`.
+2. Implement `generateQuiz` and `scoreQuiz` in `src/services/quizService.ts`.
+3. Replace the placeholder data in the pages with real state passed between routes.

@@ -1,26 +1,24 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
-import { BookingProvider } from './hooks/BookingContext'
-import Welcome from './pages/Welcome'
-import Calendar from './pages/Calendar'
-import BookingForm from './pages/BookingForm'
-import Confirmation from './pages/Confirmation'
-import MyBooking from './pages/MyBooking'
+import Home from './pages/Home'
+import SkillsPreview from './pages/SkillsPreview'
+import Quiz from './pages/Quiz'
+import Results from './pages/Results'
+import NotFound from './pages/NotFound'
+import { ROUTES } from './utils/constants'
 
 export default function App() {
   return (
-    <BookingProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<Welcome />} />
-            <Route path="calendar" element={<Calendar />} />
-            <Route path="booking" element={<BookingForm />} />
-            <Route path="confirmation" element={<Confirmation />} />
-            <Route path="my-booking" element={<MyBooking />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </BookingProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path={ROUTES.skills} element={<SkillsPreview />} />
+          <Route path={ROUTES.quiz} element={<Quiz />} />
+          <Route path={ROUTES.results} element={<Results />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
