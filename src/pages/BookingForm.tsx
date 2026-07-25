@@ -4,6 +4,7 @@ import { useBooking } from '../hooks/BookingContext'
 import { SERVICES, type ServiceType } from '../utils/constants'
 import { formatFullDate } from '../utils/dates'
 import { validateBookingForm } from '../utils/validation'
+import { saveAppointment } from '../services/appointmentService'
 
 const inputClassName =
   'w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-stone-900 placeholder:text-stone-400 focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200'
@@ -30,7 +31,7 @@ export default function BookingForm() {
     }
   }, [mobileNumber, date, timeSlot, navigate])
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = { name, age, serviceType }
@@ -41,10 +42,23 @@ export default function BookingForm() {
       return
     }
 
-    setName(name.trim())
-    setAge(age.trim())
-    setServiceType(serviceType as ServiceType)
-    navigate('/confirmation')
+    try {
+      await saveAppointment({
+        name: name.trim(),
+        age: Number(age.trim()),
+        phone: mobileNumber,
+        appointmentDate: date,
+        timeSlot: timeSlot,
+        serviceType: serviceType as ServiceType,
+      })
+
+      setName(name.trim())
+      setAge(age.trim())
+      setServiceType(serviceType as ServiceType)
+      navigate('/confirmation')
+    } catch {
+      setErrors({ submit: 'Failed to save appointment. Please try again.' })
+    }
   }
 
   if (!mobileNumber || !date || !timeSlot) {
@@ -139,6 +153,7 @@ export default function BookingForm() {
         >
           Submit booking
         </button>
+        {errors.submit && <p className="text-sm text-red-600">{errors.submit}</p>}
       </form>
     </section>
   )
